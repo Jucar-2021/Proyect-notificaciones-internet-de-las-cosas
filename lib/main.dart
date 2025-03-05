@@ -88,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
           print("✅ Usuario registrado en Firestore: $onesignalId");
         } else {
-          print("ℹ️ Usuario ya registrado en Firestore.");
+          print("ℹ️ Usuario ya registrado en Firestore....");
         }
       } else {
         print("⚠️ No se pudo obtener el OneSignal ID.");
