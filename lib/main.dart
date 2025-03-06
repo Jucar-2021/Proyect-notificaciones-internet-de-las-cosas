@@ -41,13 +41,13 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     OneSignal.Notifications.addClickListener((event) {
       print(
-          "🔔 Notificación clickeada: ${event.notification.jsonRepresentation()}");
+          "Notificación clickeada: ${event.notification.jsonRepresentation()}");
       // Aquí puedes hacer que navegue a otra pantalla o muestre un mensaje
     });
 
     OneSignal.Notifications.addForegroundWillDisplayListener((event) {
       print(
-          "📩 Notificación recibida en primer plano: ${event.notification.jsonRepresentation()}");
+          "Notificación recibida en primer plano: ${event.notification.jsonRepresentation()}");
       // Mostrar un mensaje en la app si está abierta
     });
 
@@ -57,13 +57,13 @@ class _MyHomePageState extends State<MyHomePage> {
   void requestNotificationPermission() async {
     var status = await OneSignal.Notifications.requestPermission(true);
     if (status) {
-      print("✅ Permisos de notificación concedidos");
+      print("Permisos de notificación concedidos");
     } else {
       print("❌ Permisos de notificación denegados");
     }
   }
 
-  /// ✅ Registrar usuario en Firebase Firestore
+  ///Registrar usuario en Firebase Firestore
   Future<void> _registerUser() async {
     try {
       // Obtener el OneSignal ID (Player ID)
@@ -86,28 +86,28 @@ class _MyHomePageState extends State<MyHomePage> {
             "created_at": FieldValue.serverTimestamp(),
           });
 
-          print("✅ Usuario registrado en Firestore: $onesignalId");
+          print("Usuario registrado en Firestore: $onesignalId");
         } else {
-          print("ℹ️ Usuario ya registrado en Firestore....");
+          print("ℹUsuario ya registrado en Firestore....");
         }
       } else {
-        print("⚠️ No se pudo obtener el OneSignal ID.");
+        print(" No se pudo obtener el OneSignal ID.");
       }
     } catch (e) {
-      print("❌ Error al registrar usuario en Firestore: $e");
+      print("Error al registrar usuario en Firestore: $e");
     }
   }
 
-  /// 🔍 Obtener y mostrar usuarios de Firestore en la consola
+  /// Obtener y mostrar usuarios de Firestore en la consola
   void fetchUsers() async {
     try {
       QuerySnapshot usersSnapshot =
           await FirebaseFirestore.instance.collection("user").get();
 
       for (var doc in usersSnapshot.docs) {
-        print("🆔 User ID: ${doc.id}");
-        print("📧 Email: ${doc["email"]}");
-        print("🔔 OneSignal ID: ${doc["onesignal_id"]}");
+        print("User ID: ${doc.id}");
+        print("Email: ${doc["email"]}");
+        print("OneSignal ID: ${doc["onesignal_id"]}");
         print(
             "--------------------------------------------------------------------------------------------");
       }
@@ -117,14 +117,13 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  /// 🔹 Enviar notificación con OneSignal
+  ///  Enviar notificación con OneSignal
   Future<void> _sendNotification() async {
     // Obtener el ID de suscripción del usuario en OneSignal
     var subscriptionId = await OneSignal.User.pushSubscription.id;
-    print("🔔 ID de suscripción: $subscriptionId");
+    print("ID de suscripción: $subscriptionId");
     if (subscriptionId == null) {
-      print(
-          "⚠️ No se encontró el OneSignal ID. Registra el dispositivo primero.");
+      print("No se encontró el OneSignal ID. Registra el dispositivo primero.");
       return;
     }
 
@@ -152,9 +151,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (response.statusCode == 200) {
       print(
-          "✅ Notificación>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> enviada con éxito: ${response.body}");
+          "Notificación>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> enviada con éxito: ${response.body}");
     } else {
-      print("❌ Error al enviar notificación: ${response.body}");
+      print("Error al enviar notificación: ${response.body}");
     }
   }
 
