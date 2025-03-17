@@ -22,19 +22,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _actuDatos = adafruitConn.fetchData();
-    OneSignal.Notifications.addClickListener((event) {
-      print(
-          "Notificación clickeada: ${event.notification.jsonRepresentation()}");
-      // Aquí puedes hacer que navegue a otra pantalla o muestre un mensaje
-    });
-
-    OneSignal.Notifications.addForegroundWillDisplayListener((event) {
-      print(
-          "Notificación recibida en primer plano: ${event.notification.jsonRepresentation()}");
-      // Mostrar un mensaje en la app si está abierta
-    });
-
-    requestNotificationPermission();
 
     if (conn != null) {
       print(

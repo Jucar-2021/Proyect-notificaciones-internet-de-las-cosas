@@ -18,4 +18,6 @@ class BDMysql {
 
     return conn;
   }
+
+  Future update() async {}
 }
