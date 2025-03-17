@@ -113,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     } catch (e) {
       print(
-          "❌>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Error al obtener usuarios: $e");
+          ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Error al obtener usuarios: $e");
     }
   }
 
