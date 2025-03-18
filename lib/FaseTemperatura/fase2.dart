@@ -21,7 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _actuDatos = adafruitConn.fetchData();
+
     OneSignal.Notifications.addClickListener((event) {
       print(
           "Notificación clickeada: ${event.notification.jsonRepresentation()}");
@@ -40,12 +40,6 @@ class _MyHomePageState extends State<MyHomePage> {
       print(
           ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Conexión exitosa");
     }
-  }
-
-  void actualizar() {
-    setState(() {
-      _actuDatos = adafruitConn.fetchData();
-    });
   }
 
   void requestNotificationPermission() async {
@@ -156,13 +150,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Datos de Adafruit IO"),
-        actions: [
-          IconButton(
-              onPressed: () {
-                actualizar();
-              },
-              icon: Icon(Icons.refresh))
-        ],
       ),
       body: FutureBuilder<List<dynamic>>(
         future: _actuDatos,
