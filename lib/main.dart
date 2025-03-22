@@ -3,7 +3,8 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'FaseTemperatura/fase1.dart';
 import 'package:lottie/lottie.dart';
-import '../FaseRGB/fase1RGB';
+import '../FaseRGB/fase1RGB.dart';
+import 'nav.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SplashPantalla(),
+      title: 'Temperatura y RGB',
     );
   }
 }
@@ -37,7 +39,10 @@ class SplashPantalla extends StatelessWidget {
     Future.delayed(const Duration(seconds: 5), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MyHomePage()),
+        MaterialPageRoute(
+            builder: (context) => MenuNav(
+                  title: 'a',
+                )),
       );
     });
 
