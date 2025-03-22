@@ -111,6 +111,10 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: actualizar, // Refrescar manualmente
+        child: Icon(Icons.auto_graph),
+      ),
     );
   }
 }

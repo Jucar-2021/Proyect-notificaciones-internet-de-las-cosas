@@ -5,7 +5,6 @@ import 'FaseTemperatura/fase1.dart';
 
 class MenuNav extends StatefulWidget {
   const MenuNav({super.key, required this.title});
-
   final String title;
 
   @override
@@ -14,48 +13,8 @@ class MenuNav extends StatefulWidget {
 
 class _MenuNavState extends State<MenuNav> {
   int _seleccion = 0;
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: _navegacionPantalla.elementAt(_seleccion),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home,
-              color: Colors.green,
-            ),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.text_decrease_sharp,
-              color: Colors.white,
-            ),
-            label: 'AI2',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.swap_vert,
-              color: Colors.orange,
-            ),
-            label: 'AI3',
-          ),
-        ],
-        // Color de la etiqueta y el icono seleccionado
-        selectedItemColor: Colors.blue,
-        // Color de la etiqueta y el icono no seleccionados
-        unselectedItemColor: Colors.grey,
 
-        currentIndex: _seleccion,
-        onTap: _mostrar,
-      ),
-    );
-  }
-
-  List<Widget> _navegacionPantalla = <Widget>[
+  final List<Widget> _navegacionPantalla = <Widget>[
     Home(),
     LEDControl(),
     MyHomePage(),
@@ -65,5 +24,55 @@ class _MenuNavState extends State<MenuNav> {
     setState(() {
       _seleccion = index;
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _navegacionPantalla[_seleccion],
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 15,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30),
+          child: BottomNavigationBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            type: BottomNavigationBarType.fixed,
+            selectedFontSize: 14,
+            unselectedFontSize: 12,
+            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+            currentIndex: _seleccion,
+            onTap: _mostrar,
+            selectedItemColor: Colors.teal.shade600,
+            unselectedItemColor: Colors.grey.shade500,
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.lightbulb),
+                label: 'RGB',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.thermostat_auto),
+                label: '°C y %',
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'FaseTemperatura/fase1.dart';
 import 'package:lottie/lottie.dart';
-import '../FaseRGB/fase1RGB.dart';
 import 'nav.dart';
 
 void main() async {
