@@ -116,11 +116,15 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Datos temperatura y Humedad"),
+        backgroundColor: Colors.yellow.shade700,
+        title: Text("Datos temperatura y Humedad",
+            style: TextStyle(color: Colors.white)),
+        centerTitle: true,
         actions: [
           IconButton(
             onPressed: actualizar, // Refrescar manualmente
             icon: Icon(Icons.refresh),
+            color: Colors.white,
           ),
         ],
       ),
@@ -137,12 +141,59 @@ class _MyHomePageState extends State<MyHomePage> {
 
           final data = snapshot.data!;
           return ListView.builder(
-            itemCount: data.length,
+            padding: const EdgeInsets.all(12),
+            itemCount:
+                data.length > 15 ? 15 : data.length, // máximo 15 registros
             itemBuilder: (context, index) {
-              return ListTile(
-                title: Text("Temperatura: ${data[index]['temperatura']}°C"),
-                subtitle: Text(
-                    "Humedad: ${data[index]['humedad']}%\n Fecha: ${data[index]['fecha']}"),
+              final temp = data[index]['temperatura'];
+              final hume = data[index]['humedad'];
+              final fecha = data[index]['fecha'];
+
+              return Card(
+                elevation: 6,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                color: Colors.yellow.shade50,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "🌡 Temperatura: $temp °C",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.redAccent.shade700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "💧 Humedad: $hume %",
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.blue.shade700,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Icon(Icons.calendar_today,
+                              size: 16, color: Colors.grey),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              "Fecha: $fecha",
+                              style: const TextStyle(color: Colors.grey),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               );
             },
           );
