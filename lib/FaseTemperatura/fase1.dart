@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:actividadfinal/FaseTemperatura/fase2.dart';
 import 'package:flutter/material.dart';
 import '/config/BDMysql.dart';
 import '../config/conAdafruid.dart';
+import 'package:http/http.dart' as http;
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({
@@ -13,7 +17,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final conn = BDMysql.getConnection();
+  final conn = BDMysql();
   final AdafruitConn adafruitConn = AdafruitConn();
   late Future<List<dynamic>> _actuDatos;
   Timer? _timer;
@@ -24,8 +28,31 @@ class _MyHomePageState extends State<MyHomePage> {
     _actuDatos = obtenerDatos();
     refrescarDatos();
 
-    if (conn != null) {
-      print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Conexión exitosa a MySQL");
+    obtenerNitif();
+
+    OneSignal.Notifications.addClickListener((event) {
+      print(
+          "Notificación clickeada: ${event.notification.jsonRepresentation()}");
+      // si la ap esta cerrada se abrira la app en la pagina de temperaturas
+      Navigator.push(context, MaterialPageRoute(builder: (_) => MyHomePage()));
+    });
+
+    OneSignal.Notifications.addForegroundWillDisplayListener((event) {
+      print(
+          "Notificación recibida en primer plano: ${event.notification.jsonRepresentation()}");
+      // mientas la app este abierta se mostrara un mensaje
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("${event.notification.title}")),
+      );
+    });
+  }
+
+  void obtenerNitif() async {
+    var status = await OneSignal.Notifications.requestPermission(true);
+    if (status) {
+      print("Permisos de notificación concedidos");
+    } else {
+      print("Permisos de notificación denegados");
     }
   }
 
@@ -44,6 +71,16 @@ class _MyHomePageState extends State<MyHomePage> {
           'humedad': (i < humedad.length) ? humedad[i]['value'] : 'N/A',
           'fecha': temperatura[i]['created_at'],
         });
+        if (i == 0) {
+          final t = double.parse(temperatura[i]['value']);
+          final h = double.parse(humedad[i]['value']);
+
+          await conn.insert(t, h);
+
+          if (t > 25) {
+            _sendNotification(t);
+          }
+        }
       }
 
       return datosCombinados;
@@ -100,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
           final data = snapshot.data!;
           return ListView.builder(
-            itemCount: 10,
+            itemCount: data.length,
             itemBuilder: (context, index) {
               return ListTile(
                 title: Text("Temperatura: ${data[index]['temperatura']}°C"),
@@ -112,9 +149,60 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: actualizar, // Refrescar manualmente
+        onPressed: () {
+          conn.select().then((datos) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => GraficaTemperatura(datos: Future.value(datos)),
+              ),
+            );
+          });
+        }, // Refrescar manualmente
         child: Icon(Icons.auto_graph),
       ),
     );
+  }
+
+  ///  Enviar notificación con OneSignal
+  Future<void> _sendNotification(double tem) async {
+    // Obtener el ID de suscripción del usuario en OneSignal
+    var subscriptionId = await OneSignal.User.pushSubscription.id;
+    print("ID de suscripción: $subscriptionId");
+    if (subscriptionId == null) {
+      print("No se encontró el OneSignal ID.");
+      return;
+    }
+
+    String appId = "711694fb-4c8e-4e18-a2fa-213456646120";
+    String apiKey =
+        "os_v2_app_oeljj62mrzhbrix2ee2fmzdbeds6mxq2zhwunw4awadte2tgstsl4jzwiif4sjckymzzoxs6wujjdvxkdqkaxj5nmuq3ybrfxva5r4q"; // Reemplaza con tu API Key de OneSignal
+
+    var headers = {
+      "Content-Type": "application/json; charset=utf-8",
+      "Authorization": "Basic $apiKey"
+    };
+
+    var body = jsonEncode({
+      "app_id": "$appId",
+      "include_player_ids": ["99ca6dec-58c8-4a7f-b583-548b166494a6"],
+      "headings": {"en": "Temperatura en $tem °C"},
+      "contents": {
+        "en": "La temperatuta exede los 25°C  grados con ${tem - 20} °C"
+      },
+    });
+
+    var response = await http.post(
+      Uri.parse("https://onesignal.com/api/v1/notifications"),
+      headers: headers,
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      print(
+          "Notificación>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> enviada con éxito: ${response.body}");
+    } else {
+      print("Error al enviar notificación: ${response.body}");
+    }
   }
 }

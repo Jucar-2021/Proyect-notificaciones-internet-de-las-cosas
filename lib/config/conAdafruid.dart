@@ -7,7 +7,7 @@ class AdafruitConn {
   final String feedTemper = "temper";
   final String feedHumedad = "humedad";
   final String feedLed = "led";
-  final String apiKey = "aio_TDaU24livmcpddDL7Fo4xNFrUUU8";
+  final String apiKey = "aio_gQdd79u8NjB6ls6V1rt9PKdSqeRC";
 
   Future<List<dynamic>> fetchTemper() async {
     final url = Uri.parse(
