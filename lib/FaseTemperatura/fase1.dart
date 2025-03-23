@@ -217,17 +217,38 @@ class _MyHomePageState extends State<MyHomePage> {
 
   ///  Enviar notificación con OneSignal
   Future<void> _sendNotification(double tem) async {
-    // Obtener el ID de suscripción del usuario en OneSignal
-    var subscriptionId = await OneSignal.User.pushSubscription.id;
-    print("ID de suscripción: $subscriptionId");
-    if (subscriptionId == null) {
-      print("No se encontró el OneSignal ID.");
+    final subscription = OneSignal.User.pushSubscription;
+
+    // Verifica si el usuario está suscrito
+    if (subscription == null || subscription.id == null) {
+      print("Usuario no suscrito. Intentando solicitar permisos...");
+
+      ///solicitar permisos
+      bool permiso = await OneSignal.Notifications.requestPermission(true);
+
+      if (!permiso) {
+        print("Permisos de notificación denegados.");
+        return;
+      }
+
+      // Intenta regenerar el ID d de conceder permisos
+      await Future.delayed(Duration(seconds: 2)); // pequeña espera
+    }
+
+    String? playerId = OneSignal.User.pushSubscription.id;
+
+    if (playerId == null) {
+      print(
+          "No se pudo obtener el Player ID incluso después de conceder permisos.");
       return;
     }
 
+    print("Player ID válido: $playerId");
+
+    // Datos para la notificación
     String appId = "711694fb-4c8e-4e18-a2fa-213456646120";
     String apiKey =
-        "os_v2_app_oeljj62mrzhbrix2ee2fmzdbeds6mxq2zhwunw4awadte2tgstsl4jzwiif4sjckymzzoxs6wujjdvxkdqkaxj5nmuq3ybrfxva5r4q"; // Reemplaza con tu API Key de OneSignal
+        "os_v2_app_oeljj62mrzhbrix2ee2fmzdbeds6mxq2zhwunw4awadte2tgstsl4jzwiif4sjckymzzoxs6wujjdvxkdqkaxj5nmuq3ybrfxva5r4q";
 
     var headers = {
       "Content-Type": "application/json; charset=utf-8",
@@ -235,14 +256,15 @@ class _MyHomePageState extends State<MyHomePage> {
     };
 
     var body = jsonEncode({
-      "app_id": "$appId",
-      "include_player_ids": ["99ca6dec-58c8-4a7f-b583-548b166494a6"],
+      "app_id": appId,
+      "include_player_ids": [playerId],
       "headings": {"en": "Temperatura en $tem °C"},
       "contents": {
-        "en": "La temperatuta exede los 25°C  grados con ${tem - 20} °C"
+        "en": "La temperatura excede los 25 °C. Valor actual: $tem °C"
       },
     });
 
+    // Enviar la notificación
     var response = await http.post(
       Uri.parse("https://onesignal.com/api/v1/notifications"),
       headers: headers,
@@ -250,8 +272,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     if (response.statusCode == 200) {
-      print(
-          "Notificación>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> enviada con éxito: ${response.body}");
+      print("Notificación enviada con éxito: ${response.body}");
     } else {
       print("Error al enviar notificación: ${response.body}");
     }

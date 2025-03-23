@@ -11,7 +11,7 @@ void main() async {
   OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
   OneSignal.initialize(
       "711694fb-4c8e-4e18-a2fa-213456646120"); // Reemplaza con tu App ID de OneSignal
-
+  bool permiso = await OneSignal.Notifications.requestPermission(true);
   runApp(const MyApp());
 }
 
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SplashPantalla(),
-      title: 'Temperatura y RGB',
+      title: 'Temperatura - RGB',
     );
   }
 }
